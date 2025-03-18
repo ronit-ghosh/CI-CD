@@ -1,0 +1,21 @@
+name: deploy to staging
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  redeploy:
+    name: re-deploy to the staging cluster
+    runs-on: ubuntu-latest
+    name: ssh into vm
+
+    steps:
+    - run: |
+          echo ${{secrets.SSH_PRIVATE_KEY}} &> ~/ssh_key
+          ssh -i ~ssh_key root@128.199.19.46
+          cd CI-CD && git pull
+          pnpm install
+          pnpm run build
+          pm2 restart frontend
+          pm2 restart http-server
+          pm2 restart ws-server
