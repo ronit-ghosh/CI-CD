@@ -11,7 +11,7 @@ jobs:
     steps:
     - run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-          ssh -i ~ssh_key root@128.199.19.46
+          ssh -i ~/ssh_key root@128.199.19.46
           cd CI-CD && git pull
           pnpm install
           pnpm run build
