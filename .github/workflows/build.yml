@@ -1,0 +1,29 @@
+name: Builds succeds on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build the project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        run: npm i -g pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client
+        run: pnpm run db:generate 
+
+      - name: Build Projects
+        run: pnpm run build
