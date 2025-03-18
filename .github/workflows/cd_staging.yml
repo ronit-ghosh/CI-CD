@@ -1,17 +1,16 @@
 name: deploy to staging
 on:
   push:
-    branches:
-      - "main"
+    branches: ["main"]
 
 jobs:
   redeploy:
     name: re-deploy to the staging cluster
     runs-on: ubuntu-latest
+    name: ssh into vm
 
     steps:
-      - name: ssh into vm
-        run: |
+    - run: |
           echo ${{secrets.SSH_PRIVATE_KEY}} &> ~/ssh_key
           ssh -i ~ssh_key root@128.199.19.46
           cd CI-CD && git pull
