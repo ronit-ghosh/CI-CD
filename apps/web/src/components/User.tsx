@@ -5,7 +5,8 @@ export default async function User() {
     if (!user) return <div>No user</div>
     return (
         <div>
-            {JSON.stringify(user)}
+            <div>{user.username}</div>
+            <div>{user.password}</div>
         </div>
     )
 }
