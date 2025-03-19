@@ -6,22 +6,22 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Out Repo
+      - name: Checkout the code
         uses: actions/checkout@v2
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+      - name: Docker login
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker image
-        uses: docker/build-push-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./dockerfile/Dockerfile.http-server
           push: true
-          tags: 100xdevs/web-app:latest # Replace with your Docker Hub username and repository
+          tags: ronitghoshh/cicd-http:${{ github.sha }}
