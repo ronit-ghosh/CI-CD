@@ -1,0 +1,84 @@
+services:
+  # Runs Postgres
+  db:
+    image: postgres:alpine
+    container_name: cicddb
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: cicd
+    ports:
+      - 5432:5432
+    volumes:
+      - cicd:/var/lib/postgresql/data
+    healthcheck: # for => dependency failed to start: container cicddb has no healthcheck configured
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Migrates the database
+  migrate_db:
+    restart: no
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.http-server
+    environment:
+      - DATABASE_URL=postgresql://postgres:mypassword@cicddb:5432/cicd?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["pnpm", "run", "db:migrate"]
+
+  # Runs http-server
+  http-server:
+    build:
+      network: host
+      context: ./
+      dockerfile: docker/Dockerfile.http-server
+    environment:
+      - DATABASE_URL=postgresql://postgres:mypassword@cicddb:5432/cicd?schema=public
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Runs ws-server
+  ws-server:
+    build:
+      network: host
+      context: ./
+      dockerfile: docker/Dockerfile.ws-server
+    environment:
+      - DATABASE_URL=postgresql://postgres:mypassword@cicddb:5432/cicd?schema=public
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Runs frontend
+  frontend:
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - /app/apps/web/.next
+      - /app/apps/web/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules
+        - action: rebuild
+          path: package.json
+
+# Creates a volume
+volumes:
+  cicd:
