@@ -22,6 +22,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./dockerfile/Dockerfile.http-server
+          file: ./docker/Dockerfile.http-server
           push: true
           tags: ronitghoshh/cicd-http:${{ github.sha }}
