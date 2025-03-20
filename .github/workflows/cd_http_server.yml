@@ -23,6 +23,7 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.http-server
+          build-args: DATABASE_URL=${{ secrets.DATABASE_URL }}
           push: true
           tags: ronitghoshh/cicd-http:${{ github.sha }}
 
@@ -36,4 +37,4 @@ jobs:
             sudo docker pull ronitghoshh/cicd-http:${{ github.sha }}
             sudo docker stop http-server || true
             sudo docker rm http-server || true
-            sudo docker run -d --name http-server -p 8080:8080 ronitghoshh/cicd-http:${{ github.sha }}
+            sudo docker run -e DATABASE_URL=${{ secrets.DATABASE_URL }} --name http-server -p 8080:8080 -d ronitghoshh/cicd-http:${{ github.sha }}

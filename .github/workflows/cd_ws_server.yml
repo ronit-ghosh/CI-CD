@@ -24,6 +24,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile.ws-server
           push: true
+          build-args: DATABASE_URL=${{ secrets.DATABASE_URL }}
           tags: ronitghoshh/cicd-ws:${{ github.sha }}
 
       - name: Deploy ws-server image to VM
@@ -36,4 +37,4 @@ jobs:
             sudo docker pull ronitghoshh/cicd-ws:${{ github.sha }}
             sudo docker stop ws-server || true
             sudo docker rm ws-server || true
-            sudo docker run -d --name ws-server -p 8080:8080 ronitghoshh/cicd-ws:${{ github.sha }}
+            sudo docker run -e DATABASE_URL=${{ secrets.DATABASE_URL }} --name ws-server -p 8080:8080 -d ronitghoshh/cicd-ws:${{ github.sha }}
