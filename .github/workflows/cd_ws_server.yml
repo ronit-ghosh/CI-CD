@@ -1,4 +1,4 @@
-name: Build and Deploy HTTP Server Image to Docker Hub
+name: Build and Deploy Websocket Server Image to Docker Hub
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the http-server code
+      - name: Checkout the ws-server code
         uses: actions/checkout@v2
 
       - name: Docker login
@@ -18,22 +18,22 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build http-server code and push to docker hub
+      - name: Build ws-server code and push to docker hub
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/Dockerfile.http-server
+          file: ./docker/Dockerfile.ws-server
           push: true
-          tags: ronitghoshh/cicd-http:${{ github.sha }}
+          tags: ronitghoshh/cicd-ws:${{ github.sha }}
 
-      - name: Deploy http-server image to VM
+      - name: Deploy ws-server image to VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo docker pull ronitghoshh/cicd-http:${{ github.sha }}
-            sudo docker stop http-server || true
-            sudo docker rm http-server || true
-            sudo docker run -d --name http-server -p 8080:8080 ronitghoshh/cicd-http:${{ github.sha }}
+            sudo docker pull ronitghoshh/cicd-ws:${{ github.sha }}
+            sudo docker stop ws-server || true
+            sudo docker rm ws-server || true
+            sudo docker run -d --name ws-server -p 8080:8080 ronitghoshh/cicd-ws:${{ github.sha }}
