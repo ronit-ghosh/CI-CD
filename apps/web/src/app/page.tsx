@@ -5,7 +5,7 @@ export default function Home() {
         Hello from Frontend
       </div>
       <div className="">
-        Hello again
+        Testing CICD Pipeline
       </div>
     </>
   );

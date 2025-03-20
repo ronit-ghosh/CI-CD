@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello from Backend!');
 });
 
 app.post('/api/signup', async (req, res) => {
